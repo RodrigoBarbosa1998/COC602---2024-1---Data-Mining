@@ -21,11 +21,19 @@ relevant_lines = [
     '779', '905', '108'
 ]
 
-# Função para calcular a velocidade média por linha e hora do dia
-def calculate_average_speeds(data):
+# Função para calcular a velocidade média, latitude e longitude por linha e hora do dia
+def calculate_metrics(data):
     data['velocidade'] = data['velocidade'].astype(float)
-    avg_speeds = data.groupby(['linha', 'hora_do_dia']).agg({'velocidade': 'mean'}).reset_index()
-    return avg_speeds
+    data['latitude'] = data['latitude'].str.replace(',', '.').astype(float)  # Substituir ',' por '.'
+    data['longitude'] = data['longitude'].str.replace(',', '.').astype(float)  # Substituir ',' por '.'
+    
+    avg_metrics = data.groupby(['linha', 'hora_do_dia']).agg({
+        'velocidade': 'mean',
+        'latitude': 'mean',
+        'longitude': 'mean'
+    }).reset_index()
+    
+    return avg_metrics
 
 # Função para encontrar recursivamente todos os arquivos _sorted.json em um diretório
 def find_sorted_json_files(directory):
@@ -69,29 +77,47 @@ for filepath in sorted_json_files:
     df_relevant['datahora'] = pd.to_datetime(df_relevant['datahora'], unit='ms')
     df_relevant['hora_do_dia'] = df_relevant['datahora'].dt.hour
     
-    # Calcular média das velocidades por linha e hora do dia
-    avg_speeds = calculate_average_speeds(df_relevant)
+    # Calcular média das métricas por linha e hora do dia
+    avg_metrics = calculate_metrics(df_relevant)
     
     # Iterar sobre cada linha relevante e treinar um modelo
     for linha in relevant_lines:
         # Filtrar dados apenas para a linha atual
-        data_linha = avg_speeds[avg_speeds['linha'] == linha]
+        data_linha = avg_metrics[avg_metrics['linha'] == linha]
         
         if len(data_linha) > 0:
-            # Separar features e target
-            X = data_linha[['hora_do_dia']]
-            y = data_linha['velocidade']
+            # Separar features e target (velocidade média)
+            X_speed = data_linha[['hora_do_dia', 'latitude', 'longitude']]
+            y_speed = data_linha['velocidade']
             
-            # Criar modelo de regressão (exemplo: regressão linear)
-            model = make_pipeline(ColumnTransformer(transformers=[
-                ('scaler', StandardScaler(), ['hora_do_dia'])
+            # Criar modelo de regressão para velocidade média
+            model_speed = make_pipeline(ColumnTransformer(transformers=[
+                ('scaler', StandardScaler(), ['hora_do_dia', 'latitude', 'longitude'])
             ]), LinearRegression())
             
-            # Treinar o modelo
-            model.fit(X, y)
+            # Treinar o modelo de velocidade média
+            model_speed.fit(X_speed, y_speed)
             
-            # Salvar o modelo treinado
-            model_filename = f'model_{linha}.joblib'
-            model_path = os.path.join(models_path, model_filename)
-            joblib.dump(model, model_path)
-            print(f'Modelo para linha {linha} salvo em {model_path}')
+            # Salvar o modelo treinado de velocidade média
+            model_speed_filename = f'model_speed_{linha}.joblib'
+            model_speed_path = os.path.join(models_path, model_speed_filename)
+            joblib.dump(model_speed, model_speed_path)
+            print(f'Modelo de velocidade para linha {linha} salvo em {model_speed_path}')
+            
+            # Separar features e target (latitude e longitude)
+            X_coords = data_linha[['hora_do_dia', 'velocidade']]
+            y_coords = data_linha[['latitude', 'longitude']]
+            
+            # Criar modelo de regressão para latitude e longitude
+            model_coords = make_pipeline(ColumnTransformer(transformers=[
+                ('scaler', StandardScaler(), ['hora_do_dia', 'velocidade'])
+            ]), LinearRegression())
+            
+            # Treinar o modelo de latitude e longitude
+            model_coords.fit(X_coords, y_coords)
+            
+            # Salvar o modelo treinado de latitude e longitude
+            model_coords_filename = f'model_coords_{linha}.joblib'
+            model_coords_path = os.path.join(models_path, model_coords_filename)
+            joblib.dump(model_coords, model_coords_path)
+            print(f'Modelo de coordenadas para linha {linha} salvo em {model_coords_path}')
