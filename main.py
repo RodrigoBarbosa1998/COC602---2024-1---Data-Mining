@@ -160,6 +160,10 @@ def calculate_velocity(lat1, lon1, lat2, lon2, time_diff_seconds):
     coords_1 = (float(lat1.replace(',', '.')), float(lon1.replace(',', '.')))
     coords_2 = (float(lat2.replace(',', '.')), float(lon2.replace(',', '.')))
     distance_km = great_circle(coords_1, coords_2).kilometers
+    
+    if time_diff_seconds == 0:
+        return 0.0  # Return 0 velocity if time difference is zero
+    
     velocity = (distance_km / time_diff_seconds) * 3600.0  # Convert to km/h
     return velocity
 
@@ -377,6 +381,8 @@ def main():
     data_gps_path = os.path.join(current_dir, 'dataGPS')
     data_test_path = os.path.join(current_dir, 'dataTest')
     
+    models_path = os.path.join(current_dir, 'models')
+    
     # Define relevant bus lines
     relevant_lines = [
         '107', '177', '203', '222', '230', '232', '415', '2803', '324', '852', '557', '759', '343', '779', '905', '108',
@@ -409,12 +415,12 @@ def main():
     # # Fix files in dataTest directory
     # fix_all_sorted_json_files(data_test_path)
     
-    process_all_files(current_dir)
+    # process_all_files(current_dir)
     
-    # # Process all sorted JSON files in dataGPS folder
+    # Process all sorted JSON files in dataGPS folder
     # process_all_sorted_json_files(data_gps_path)
     
-    # # Process all sorted JSON files in dataTest folder
+    # Process all sorted JSON files in dataTest folder
     # process_all_sorted_json_files(data_test_path)
     
 if __name__ == "__main__":
