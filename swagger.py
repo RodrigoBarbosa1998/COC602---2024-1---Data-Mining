@@ -36,7 +36,7 @@ def avalia():
 
 # Função para enviar o arquivo resposta.json para o endpoint especificado
 def enviar_testes_finais(filepath):
-    url = 'https://barra.cos.ufrj.br:443/rest/rpc/avalia'
+    url = ''
     
     # Carrega os dados do arquivo resposta.json
     with open(filepath, 'r') as file:

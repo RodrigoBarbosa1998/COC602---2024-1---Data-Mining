@@ -393,35 +393,35 @@ def main():
     ]
     
     # Extract zip files
-    # extract_zip_files(data_gps_path)
-    # extract_zip_files(data_test_path)
+    extract_zip_files(data_gps_path)
+    extract_zip_files(data_test_path)
     
     # Process data files
     # Filter JSON files in dataGPS folder
-    # filter_json_files(data_gps_path, relevant_lines)
+    filter_json_files(data_gps_path, relevant_lines)
     
-    # # Filter JSON files in dataTest folder
-    # filter_json_files(data_test_path, relevant_lines)
+    # Filter JSON files in dataTest folder
+    filter_json_files(data_test_path, relevant_lines)
     
-    # # Group and sequence JSON files in dataGPS folder
-    # group_sequence_json_files(data_gps_path)
+    # Group and sequence JSON files in dataGPS folder
+    group_sequence_json_files(data_gps_path)
     
-    # # Group and sequence JSON files in dataTest folder
-    # group_sequence_json_files(data_test_path)
+    # Group and sequence JSON files in dataTest folder
+    group_sequence_json_files(data_test_path)
     
-    # # Fix files in dataGPS directory
-    # fix_all_sorted_json_files(data_gps_path)
+    # Fix files in dataGPS directory
+    fix_all_sorted_json_files(data_gps_path)
     
-    # # Fix files in dataTest directory
-    # fix_all_sorted_json_files(data_test_path)
+    # Fix files in dataTest directory
+    fix_all_sorted_json_files(data_test_path)
     
-    # process_all_files(current_dir)
+    process_all_files(current_dir)
     
     # Process all sorted JSON files in dataGPS folder
-    # process_all_sorted_json_files(data_gps_path)
+    process_all_sorted_json_files(data_gps_path)
     
     # Process all sorted JSON files in dataTest folder
-    # process_all_sorted_json_files(data_test_path)
+    process_all_sorted_json_files(data_test_path)
     
 if __name__ == "__main__":
     main()
